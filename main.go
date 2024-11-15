@@ -10,7 +10,6 @@ import (
 	"os"
 )
 
-// WeatherData represents the structure of weather data we want to return to the frontend
 type WeatherData struct {
 	City       string  `json:"city"`
 	Temperature float64 `json:"temperature"`
@@ -20,7 +19,6 @@ type WeatherData struct {
 	Pressure    int     `json:"pressure"`
 }
 
-// OpenWeatherMapResponse represents the structure of data from the OpenWeatherMap API
 type OpenWeatherMapResponse struct {
 	Name   string `json:"name"`
 	Main   struct {
@@ -64,7 +62,6 @@ func FetchWeather(city string) (WeatherData, error) {
 			return WeatherData{}, err
 	}
 
-	// Check if Weather array has at least one element
 	description := ""
 	if len(apiResponse.Weather) > 0 {
 			description = apiResponse.Weather[0].Description
@@ -82,7 +79,6 @@ func FetchWeather(city string) (WeatherData, error) {
 }
 
 
-// WeatherHandler handles the HTTP request for weather data
 func WeatherHandler(w http.ResponseWriter, r *http.Request) {
 	// Allow CORS for frontend access
 	w.Header().Set("Access-Control-Allow-Origin", "*")
