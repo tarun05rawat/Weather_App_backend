@@ -10,18 +10,15 @@ import (
 	"os"
 )
 
-// WeatherData represents the structure of weather data we want to return to the frontend
 type WeatherData struct {
-	City        string  `json:"city"`
+	City       string  `json:"city"`
 	Temperature float64 `json:"temperature"`
 	Description string  `json:"description"`
 	Clouds      int     `json:"clouds"`
 	Humidity    int     `json:"humidity"`
 	Pressure    int     `json:"pressure"`
-	Icon        string  `json:"icon"` // Added field for icon
 }
 
-// OpenWeatherMapResponse represents the structure of data from the OpenWeatherMap API
 type OpenWeatherMapResponse struct {
 	Name   string `json:"name"`
 	Main   struct {
@@ -41,7 +38,8 @@ type OpenWeatherMapResponse struct {
 	} `json:"sys"`
 }
 
-// FetchWeather fetches weather data from OpenWeatherMap
+
+
 func FetchWeather(city string) (WeatherData, error) {
 	apiKey := os.Getenv("API_KEY")
 	encodedCity := url.QueryEscape(city)
@@ -49,41 +47,38 @@ func FetchWeather(city string) (WeatherData, error) {
 
 	resp, err := http.Get(apiURL)
 	if err != nil {
-		return WeatherData{}, err
+			return WeatherData{}, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		bodyBytes, _ := io.ReadAll(resp.Body)
-		return WeatherData{}, fmt.Errorf("OpenWeatherMap API error: %s", string(bodyBytes))
+			bodyBytes, _ := io.ReadAll(resp.Body)
+			return WeatherData{}, fmt.Errorf("OpenWeatherMap API error: %s", string(bodyBytes))
 	}
 
 	var apiResponse OpenWeatherMapResponse
 	err = json.NewDecoder(resp.Body).Decode(&apiResponse)
 	if err != nil {
-		return WeatherData{}, err
+			return WeatherData{}, err
 	}
 
 	description := ""
-	icon := ""
 	if len(apiResponse.Weather) > 0 {
-		description = apiResponse.Weather[0].Description
-		icon = apiResponse.Weather[0].Icon
+			description = apiResponse.Weather[0].Description
 	}
 
 	weather := WeatherData{
-		City:        apiResponse.Name,
-		Temperature: apiResponse.Main.Temp,
-		Description: description,
-		Clouds:      apiResponse.Clouds.All,
-		Humidity:    apiResponse.Main.Humidity,
-		Pressure:    apiResponse.Main.Pressure,
-		Icon:        icon, // Set the icon field
+			City:        apiResponse.Name,
+			Temperature: apiResponse.Main.Temp,
+			Description: description,
+			Clouds:      apiResponse.Clouds.All,
+			Humidity:    apiResponse.Main.Humidity,
+			Pressure:    apiResponse.Main.Pressure,
 	}
 	return weather, nil
 }
 
-// WeatherHandler handles the HTTP request for weather data
+
 func WeatherHandler(w http.ResponseWriter, r *http.Request) {
 	// Allow CORS for frontend access
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -91,22 +86,24 @@ func WeatherHandler(w http.ResponseWriter, r *http.Request) {
 
 	city := r.URL.Query().Get("city")
 	if city == "" {
-		http.Error(w, "City is required", http.StatusBadRequest)
-		return
+			http.Error(w, "City is required", http.StatusBadRequest)
+			return
 	}
 
 	weatherData, err := FetchWeather(city)
 	if err != nil {
-		log.Printf("Error fetching weather data: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+			log.Printf("Error fetching weather data: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 	}
 
 	json.NewEncoder(w).Encode(weatherData)
 }
 
+
 func main() {
 	http.HandleFunc("/weather", WeatherHandler)
+	
 
 	port := os.Getenv("PORT")
 	if port == "" {
