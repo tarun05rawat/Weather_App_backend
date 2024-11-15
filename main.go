@@ -80,7 +80,6 @@ func FetchWeather(city string) (WeatherData, error) {
 
 
 func WeatherHandler(w http.ResponseWriter, r *http.Request) {
-	// Allow CORS for frontend access
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
