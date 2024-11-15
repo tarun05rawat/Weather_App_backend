@@ -42,9 +42,8 @@ type OpenWeatherMapResponse struct {
 
 
 
-// FetchWeather fetches weather data from OpenWeatherMap
 func FetchWeather(city string) (WeatherData, error) {
-	apiKey := `9741b56bf0e5e284d70ad2e44f516fe2` // Replace with your actual API key
+	apiKey := os.Getenv("API_KEY")
 	encodedCity := url.QueryEscape(city)
 	apiURL := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s", encodedCity, apiKey)
 
