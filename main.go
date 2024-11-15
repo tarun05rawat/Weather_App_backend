@@ -17,6 +17,7 @@ type WeatherData struct {
 	Clouds      int     `json:"clouds"`
 	Humidity    int     `json:"humidity"`
 	Pressure    int     `json:"pressure"`
+	Icon        string  `json:"icon"` 
 }
 
 type OpenWeatherMapResponse struct {
@@ -41,7 +42,8 @@ type OpenWeatherMapResponse struct {
 
 
 func FetchWeather(city string) (WeatherData, error) {
-	apiKey := os.Getenv("API_KEY")
+	apiKey := `9741b56bf0e5e284d70ad2e44f516fe2`
+	// os.Getenv("API_KEY")
 	encodedCity := url.QueryEscape(city)
 	apiURL := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?q=%s&units=metric&appid=%s", encodedCity, apiKey)
 
@@ -63,8 +65,10 @@ func FetchWeather(city string) (WeatherData, error) {
 	}
 
 	description := ""
+	icon := ""
 	if len(apiResponse.Weather) > 0 {
-			description = apiResponse.Weather[0].Description
+		description = apiResponse.Weather[0].Description
+		icon = apiResponse.Weather[0].Icon 
 	}
 
 	weather := WeatherData{
@@ -74,6 +78,7 @@ func FetchWeather(city string) (WeatherData, error) {
 			Clouds:      apiResponse.Clouds.All,
 			Humidity:    apiResponse.Main.Humidity,
 			Pressure:    apiResponse.Main.Pressure,
+			Icon:        icon,
 	}
 	return weather, nil
 }
